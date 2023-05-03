@@ -1,7 +1,6 @@
 import gym
 import numpy
 from gym import spaces, error
-import os
 
 class LLMEnv(gym.Env):
 
