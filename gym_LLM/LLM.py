@@ -8,6 +8,7 @@ class LLMEnv(gym.Env):
 		super(LLMEnv, self).__init__()
 
 		# Action space = space of words in vocabulary (default = 50432)
+		# **** TO-DO: action should be logits
 		self.vocab_size = 50432
 		self.action_space = spaces.Discrete(self.vocab_size)
 
