@@ -1,11 +1,7 @@
 import gym
 import numpy
 from gym import spaces, error
-import xml.etree.ElementTree as ET
 import os
-
-# This is a stub for tic-tac-toe logic v1.0
-# The code is same as v0, to be modified.
 
 class TicTacToeEnv(gym.Env):
 

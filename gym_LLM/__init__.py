@@ -5,6 +5,6 @@ from gym.envs.registration import register
 
 register(
     id='LLM-v0',
-    entry_point='gym_LLM.LLM_plain:LLMEnv',
+    entry_point='gym_LLM.LLM:LLMEnv',
     reward_threshold=1000
 )
