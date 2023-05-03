@@ -14,11 +14,10 @@ class LLMEnv(gym.Env):
 		self.action_space = spaces.Discrete(self.vocab_size)
 
 		# State space = sequence of prior tokens (dim = d_model each)
-		self.d_model = 512
-		self.state_space = spaces.Sequence( spaces.Box( -1.0, 1.0, shape = (self.d_model,) ))
-		# print("state space test sample:", self.state_space.sample())
+		self.d_model = 96
 
 		self.observation_space = spaces.Sequence( spaces.Box( -1.0, 1.0, shape = (self.d_model,) ))
+		# print("state space test sample:", self.observation_space.sample())
 
 		self.rewards = {
 			'wrong_word': -1.0,
@@ -26,53 +25,31 @@ class LLMEnv(gym.Env):
 			}
 
 	def reset(self):
-		self.state_vector = (self.d_model) * [0]
-		return numpy.array(self.state_vector)
-
-	# ------------------ GAME STATE CHECK ----------------
-	def is_win(self):
-		if self.win == 1:
-			return True
-		return False
-
-	def is_draw(self):
-		for i in range(self.board_size * self.board_size):
-			if self.state_vector[i] == 0:
-				return False
-		return True
+		self.state = ()		# empty sequence
+		return self.state
 
 	# ------------------ ACTIONS --------------------
-	def step(self, action, symbol):
-		is_position_already_used = False
+	def step(self, action):
 
-		if self.state_vector[action] != 0:
-			is_position_already_used = True
+		# State update
+		# append new token to obs sequence
+		self.state = self.state + (action,)
 
-		if is_position_already_used:
-			self.state_vector[action] = "Bad"
-			reward_type = 'bad_position'
+		# Determine reward
+		if self.is_win():
+			reward_type = 'win'
+			done = True
+		elif self.is_draw():
+			reward_type = 'draw'
 			done = True
 		else:
-			self.state_vector[action] = symbol
+			reward_type = 'still_in_game'
+			done = False
 
-			if self.is_win():
-				reward_type = 'win'
-				done = True
-			elif self.is_draw():
-				reward_type = 'draw'
-				done = True
-			else:
-				reward_type = 'still_in_game'
-				done = False
-
-		return numpy.array(self.state_vector), self.rewards[reward_type], done, {'already_used_position': is_position_already_used}
+		return self.state, self.reward, done
 
 	def render(self, mode=None, close=False):
-		print("Display sentence")
+		print("[display sentence?]")
 
 	def close(self):
 		return None
-
-	def seed(self, seed=None):
-		self.action_space.np_random.seed(seed)
-		return [seed]
